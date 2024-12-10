@@ -1,0 +1,71 @@
+name: namer_app
+description: A new Flutter project.
+
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
+
+version: 0.0.1+1
+
+environment:
+  sdk: ">=2.19.4 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  shared_preferences: ^2.0.7
+  
+  flutter_localizations:
+    sdk: flutter
+
+  english_words: ^4.0.0
+  provider: ^6.0.0
+  intl: any
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  flutter_markdown: ^0.6.19
+  markdown_toolbar: ^0.5.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^3.0.1
+  hive_generator: ^2.0.1
+  build_runner: ^2.4.9 
+
+flutter:
+  uses-material-design: true
+  assets:
+    - images/image0.jpg
+  fonts:
+    - family: Monoton
+      fonts:
+        - asset: fonts/Monoton-Regular.ttf
+          weight: 400
+    - family: Koulen
+      fonts:
+        - asset: fonts/Koulen-Regular.ttf
+          weight: 400
+    - family: Koulen
+      fonts:
+        - asset: fonts/Oswald-Bold.ttf
+          weight: 700
+    - family: Koulen
+      fonts:
+        - asset: fonts/Oswald-SemiBold.ttf
+          weight: 600
+    - family: Koulen
+      fonts:
+        - asset: fonts/Oswald-Medium.ttf
+          weight: 500
+    - family: Koulen
+      fonts:
+        - asset: fonts/Oswald-Regular.ttf
+          weight: 400
+    - family: Koulen
+      fonts:
+        - asset: fonts/Oswald-Light.ttf
+          weight: 300
+    - family: Koulen
+      fonts:
+        - asset: fonts/Oswald-ExtraLight.ttf
+          weight: 400
