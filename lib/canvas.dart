@@ -74,7 +74,7 @@ class _CanvasPageState extends State<CanvasPage> {
               body: GestureDetector(
                 onPanUpdate: (DragUpdateDetails details) {
                   setState(() {
-                    offsets.add(details.globalPosition);
+                    offsets.add(details.localPosition);
                   });
                 },
                 onPanEnd: (DragEndDetails details) => setState(() {}),
