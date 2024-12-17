@@ -4,20 +4,15 @@ import 'package:provider/provider.dart';
 import 'color_schemes.g.dart';
 import 'main.dart';
 
-class CanvasApp extends StatelessWidget {
-  const CanvasApp({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-          colorSchemeSeed: const Color(0xff6750a4), useMaterial3: true),
-      home: FilmStackPage(),
-    );
-  }
-}
 
 class _FilmStackPageState extends State<FilmStackPage> {
+
+  final textController = new TextEditingController();
+  final FilmFormKey = GlobalKey<FormState>();
+  final filmKey = GlobalKey<_ListOf_filmsState>();
+
+
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
@@ -62,11 +57,314 @@ class _FilmStackPageState extends State<FilmStackPage> {
               floatingActionButton: FloatingActionButton(
                 tooltip: 'Favorite',
                 child: const Icon(Icons.add),
-                onPressed: () {},
+                onPressed: () async{
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context){
+                      return StatefulBuilder(builder: (context, setState) => Dialog(
+                                                          child: SizedBox(
+                                      width: 220,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(26.0),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text("New Problem",
+                                                textWidthBasis:
+                                                    TextWidthBasis.longestLine,
+                                                style: TextStyle(fontSize: 24),
+                                                textAlign: TextAlign.start),
+                                            Form(
+                                              key: ProblemFormKey,
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: <Widget>[
+                                                  TextFormField(
+                                                      controller: textController
+                                                        ..text = "",
+                                                      decoration:
+                                                          InputDecoration(
+                                                        labelText: 'Problem',
+                                                      ),
+                                                      validator: (value) {
+                                                        if (value == null ||
+                                                            value.isEmpty) {
+                                                          return 'Input problem!';
+                                                        }
+                                                        return null;
+                                                      }),
+                                                  DropdownButton<String>(
+                                                    //alignment: AlignmentDirectional.center,
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        color: Colors.black),
+                                                    value: dropdownValue,
+                                                    isExpanded: true,
+                                                    items: list.map<
+                                                            DropdownMenuItem<
+                                                                String>>(
+                                                        (String value) {
+                                                      return DropdownMenuItem<
+                                                          String>(
+                                                        value: value,
+                                                        child: Text(value),
+                                                      );
+                                                    }).toList(),
+                                                    onChanged: (String?
+                                                        selectedvalue) {
+                                                      dropdownValue =
+                                                          selectedvalue!;
+                                                      setState(
+                                                          () {}); // update the main(state) UI
+                                                      setStateSB(
+                                                          () {}); // update UI inside Dialog
+                                                    },
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                            OutlinedButton(
+                                              child: Text("Add"),
+                                              onPressed: () {
+                                                if (ProblemFormKey.currentState!
+                                                    .validate()) {
+                                                  Navigator.pop(context);
+                                                  final state =
+                                                      problemKey.currentState!;
+                                                  state.addProblem(
+                                                      textController.text,
+                                                      dropdownValue);
+                                                  textController.clear();
+                                                  dropdownValue =
+                                                      defaultDropdown;
+                                                }
+                                              },
+                                            )
+                                          ],
+                                        ),
+                                      )),
+                      ))
+
+                      }
+
+
+
+                );}
               )));
     });
   }
 }
+
+class ListOf_films extends StatefulWidget {
+  ListOf_films({Key? key}) : super(key: key);
+
+  @override
+  _ListOf_filmsState createState() => _ListOf_filmsState();
+}
+
+class _ListOf_filmsState extends State<ListOf_films> {
+  Icon icon = Icon(Icons.question_mark_rounded);
+  Color color = Colors.white;
+  List<FilmStackPage> films = <Film>[];
+
+  @override
+  void initState() {
+    super.initState();
+    printHive();
+  }
+
+  Future<void> printHive() async {
+    print(boxFilms.toMap());
+  }
+
+  Future<Map<dynamic, dynamic>> buildWidget() async {
+    return boxFilms.toMap();
+  }
+
+  Future<void> addFilm(title, type) async {
+    setState(() {
+      boxProblems
+          .add(Film(title: title, type: type, description: "lelum polelum"));
+      films = [
+        ...films,
+      ];
+    });
+  }
+
+  void setfilms(problems) {
+    setState(() {
+      films = films;
+    });
+  }
+
+
+
+
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Map<dynamic, dynamic>>(
+      future: buildWidget(),
+      builder: (BuildContext context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasError) {
+            return Text(snapshot.error.toString());
+          } else {
+            return ListView.builder(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(8),
+              itemCount: snapshot.data?.length,
+              itemBuilder: (BuildContext context, int index) {
+                //print(snapshot.data?.keys);
+                var sdata = snapshot.data?.entries.elementAt(index).value;
+                switch (sdata.type) {
+                  case "Urgent":
+                    icon = Icon(Icons.warning_amber_rounded,
+                        size: 40,
+                        color: context.isDarkMode
+                            ? Colors.grey.shade100
+                            : Colors.grey.shade900);
+                    color = Colors.amber;
+                    break;
+                  case "Lifetime":
+                    icon = Icon(Icons.signpost_outlined,
+                        size: 40,
+                        color: context.isDarkMode
+                            ? Colors.grey.shade100
+                            : Colors.grey.shade900);
+                    color = Colors.green;
+                    break;
+                  case "Thoughts":
+                    icon = Icon(Icons.chat_bubble_outline_rounded,
+                        size: 40,
+                        color: context.isDarkMode
+                            ? Colors.grey.shade100
+                            : Colors.grey.shade900);
+                    color = Colors.lightBlueAccent;
+                    break;
+                  default:
+                    icon = Icon(Icons.question_mark_rounded,
+                        size: 40,
+                        color: context.isDarkMode
+                            ? Colors.grey.shade100
+                            : Colors.grey.shade900);
+                    color = Colors.green;
+                    break;
+                }
+
+                return GestureDetector(
+                  onTap: () => {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) {
+                        // return ProblemPage(title: sdata.title,type:sdata.type,description: sdata.description);
+                        return Placeholder();
+                      }
+                      
+                      
+                      ),
+                    )
+                  },
+                  child: IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Expanded(
+                            child: Container(
+                                margin: EdgeInsets.fromLTRB(5, 0, 0, 5),
+                                decoration: BoxDecoration(
+                                  color: context.isDarkMode
+                                      ? Colors.grey[700]
+                                      : Colors.grey[200],
+                                  borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(12),
+                                      bottomLeft: Radius.circular(12)),
+                                  border: Border(
+                                    top: BorderSide(
+                                        color: Colors
+                                            .grey.shade900, // Set border color
+                                        width: 1.0),
+                                    right: BorderSide(
+                                        color: Colors
+                                            .grey.shade900, // Set border color
+                                        width: 0.0),
+                                    bottom: BorderSide(
+                                        color: Colors
+                                            .grey.shade900, // Set border color
+                                        width: 1.0),
+                                    left: BorderSide(
+                                        color: Colors
+                                            .grey.shade900, // Set border color
+                                        width: 1.0),
+                                  ),
+                                ),
+                                child: Center(
+                                  child: Text(sdata.title,
+                                      textAlign: TextAlign.start,
+                                      style: TextStyle(
+                                          color: context.isDarkMode
+                                              ? Colors.grey.shade100
+                                              : const Color.fromARGB(
+                                                  255, 2, 2, 2),
+                                          fontFamily: 'Oswald',
+                                          fontWeight: FontWeight.w300,
+                                          fontSize: 16)),
+                                ))),
+                        Container(
+                          height: 60,
+                          width: 100,
+                          margin: EdgeInsets.fromLTRB(0, 0, 5, 5),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: color,
+                                border: Border(
+                                  top: BorderSide(
+                                      color: Colors
+                                          .grey.shade900, // Set border color
+                                      width: 1.0),
+                                  right: BorderSide(
+                                      color: Colors
+                                          .grey.shade900, // Set border color
+                                      width: 1.0),
+                                  bottom: BorderSide(
+                                      color: Colors
+                                          .grey.shade900, // Set border color
+                                      width: 1.0),
+                                  left: BorderSide(
+                                      color: Colors
+                                          .grey.shade900, // Set border color
+                                      width: 0.0),
+                                ), // Set border width
+                                borderRadius: BorderRadius.only(
+                                    topRight: Radius.circular(10.0),
+                                    bottomRight: Radius.circular(10.0))
+                                // Set rounded corner radius
+                                ),
+                            child: icon,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                );
+              },
+            );
+          }
+        } else {
+          return Text("nie wiem co robie sorki");
+        }
+      },
+    );
+  }
+}
+
+
 
 class FilmStackPage extends StatefulWidget {
   @override
