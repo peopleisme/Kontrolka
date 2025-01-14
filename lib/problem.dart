@@ -8,11 +8,10 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 class ProblemPage extends StatefulWidget {
   final String title, type, description;
   const ProblemPage(
-      {Key? key,
+      {super.key,
       required this.title,
       required this.type,
-      required this.description})
-      : super(key: key);
+      required this.description});
 
   @override
   State<ProblemPage> createState() => _ProblemPageState();

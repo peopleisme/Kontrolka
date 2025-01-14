@@ -16,7 +16,7 @@ class Film extends HiveObject{
   @HiveField(4)
   final String plot;
   @HiveField(5)
-  final String year;
+  final int year;
   Film({
     required this.title, 
     required this.poster,

@@ -23,6 +23,10 @@ dependencies:
   hive_flutter: ^1.1.0
   flutter_markdown: ^0.6.19
   markdown_toolbar: ^0.5.0
+  flutter_rating: ^2.0.2
+  flutter_pannable_rating_bar: ^2.7.2+1
+  http: ^1.1.0
+  flutter_svg: ^2.0.10+1
 
 dev_dependencies:
   flutter_test:

@@ -22,7 +22,7 @@ class FilmAdapter extends TypeAdapter<Film> {
       myRating: fields[2] as double,
       imdbRating: fields[3] as double,
       plot: fields[4] as String,
-      year: fields[5] as String,
+      year: fields[5] as int,
     );
   }
 

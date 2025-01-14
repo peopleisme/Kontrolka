@@ -6,19 +6,22 @@ import 'main.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
 class FilmPage extends StatefulWidget {
-  final String title, type, description;
+  final String title, poster, plot, year;
+  final double myRating, imdbRating;
   const FilmPage(
-      {Key? key,
+      {super.key,
       required this.title,
-      required this.type,
-      required this.description})
-      : super(key: key);
+      required this.poster,
+      required this.myRating,
+      required this.imdbRating,
+      required this.plot,
+      required this.year});
 
   @override
-  State<ProblemPage> createState() => _ProblemPageState();
+  State<FilmPage> createState() => _FilmPageState();
 }
 
-class _ProblemPageState extends State<ProblemPage> {
+class _FilmPageState extends State<FilmPage> {
   bool editMode = true;
   TextEditingController noteController = TextEditingController();
   UndoHistoryController undoController = UndoHistoryController();

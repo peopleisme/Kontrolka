@@ -3,13 +3,12 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive/hive.dart';
-import 'package:namer_app/problem.dart';
 import 'package:provider/provider.dart';
-import 'boxes.dart';
 import 'color_schemes.g.dart';
 import 'main.dart';
-import 'problem_model.dart';
-
+import 'problem.dart';
+import 'models/boxes.dart';
+import 'models/problem_model.dart';
 
 class _BrainstormingPageState extends State<BrainstormingPage> {
   final textController = new TextEditingController();
@@ -93,6 +92,7 @@ class _BrainstormingPageState extends State<BrainstormingPage> {
                 tooltip: 'New Problem',
                 child: const Icon(Icons.add),
                 onPressed: () async {
+                  textController.clear();
                   showDialog(
                       context: context,
                       builder: (BuildContext context) {
@@ -116,8 +116,7 @@ class _BrainstormingPageState extends State<BrainstormingPage> {
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: <Widget>[
                                                   TextFormField(
-                                                      controller: textController
-                                                        ..text = "",
+                                                      controller: textController,
                                                       decoration:
                                                           InputDecoration(
                                                         labelText: 'Problem',
@@ -289,7 +288,10 @@ class _ListOf_problemsState extends State<ListOf_problems> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) {
-                        return ProblemPage(title: sdata.title,type:sdata.type,description: sdata.description);
+                        return ProblemPage(
+                            title: sdata.title,
+                            type: sdata.type,
+                            description: sdata.description);
                       }),
                     )
                   },

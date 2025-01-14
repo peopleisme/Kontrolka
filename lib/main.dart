@@ -4,23 +4,25 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:namer_app/bookstack.dart';
 import 'package:namer_app/filmstack.dart';
 import 'package:namer_app/ideas.dart';
-import 'package:namer_app/problem_model.dart' ;
+import 'package:namer_app/models/problem_model.dart';
+import 'package:namer_app/models/film_model.dart';
 import 'package:namer_app/problems.dart';
+import 'package:namer_app/todo.dart';
 import 'package:provider/provider.dart';
-import 'todo.dart';
 import 'canvas.dart';
- import 'package:hive_flutter/hive_flutter.dart';
-import 'boxes.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'models/boxes.dart';
+import 'package:http/http.dart' as http;
 
-void main() async{
-  await Hive.initFlutter();
 
-  
+void main() async {
+  await Hive.initFlutter(); 
+
   Hive.registerAdapter(ProblemAdapter());
-  boxProblems = await Hive.openBox<Problem>("essa");
+  Hive.registerAdapter(FilmAdapter());
+  boxProblems = await Hive.openBox<Problem>("problems");
+  boxFilms = await Hive.openBox<Film>("films");
   runApp(MyApp());
-
-  
 }
 
 extension DarkMode on BuildContext {
@@ -67,8 +69,6 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
- 
-
 }
 
 class _MyHomePageState extends State<MyHomePage> {
