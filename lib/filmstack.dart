@@ -18,7 +18,7 @@ class _FilmStackPageState extends State<FilmStackPage> {
   final filmKey = GlobalKey<_ListOf_filmsState>();
   double rating = 0.0;
   String sortingDropdown = "asc_title";
-  bool isGrid = false;
+  bool isGrid = false, isSeen = false;
   String display = "list";
   @override
   @override
@@ -130,7 +130,7 @@ class _FilmStackPageState extends State<FilmStackPage> {
                               DropdownMenuItem<String>(
                                   value: "asc_title",
                                   child: Text(
-                                    "Nazwa",
+                                    "Sort by title",
                                     style: TextStyle(
                                         color: context.isDarkMode
                                             ? Colors.grey.shade100
@@ -139,7 +139,7 @@ class _FilmStackPageState extends State<FilmStackPage> {
                               DropdownMenuItem<String>(
                                   value: "desc_rating",
                                   child: Text(
-                                    "Ocena",
+                                    "Sort by rating",
                                     style: TextStyle(
                                         color: context.isDarkMode
                                             ? Colors.grey.shade100
@@ -158,19 +158,36 @@ class _FilmStackPageState extends State<FilmStackPage> {
                           padding: EdgeInsets.only(left: 4, right: 4, top: 0),
                           icon: Padding(
                               padding: EdgeInsets.all(8.0),
-                              child: isGrid == true
-                                  ? Icon(Icons.view_list)
-                                  : Icon(Icons.dashboard)),
+                              child: isSeen == true
+                                  ? Icon(Icons.visibility_outlined)
+                                  : Icon(Icons.visibility_off_outlined)),
                           onPressed: () {
                             setState(() {
-                              isGrid = !isGrid;
-                              if (isGrid)
-                                display = "grid";
-                              else
-                                display = "list";
+                              isSeen = !isSeen;
+                              // if (isSeen)
+                              //   display = "grid";
+                              // else
+                              //   display = "list";
                             });
                           },
                         ),
+                        IconButton(
+                            iconSize: 30.0,
+                            padding: EdgeInsets.only(left: 4, right: 4, top: 0),
+                            icon: Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: isGrid == true
+                                    ? Icon(Icons.view_list)
+                                    : Icon(Icons.dashboard)),
+                            onPressed: () {
+                              setState(() {
+                                isGrid = !isGrid;
+                                if (isGrid)
+                                  display = "grid";
+                                else
+                                  display = "list";
+                              });
+                            }),
                       ],
                     ),
                   ),
@@ -184,7 +201,7 @@ class _FilmStackPageState extends State<FilmStackPage> {
                 ],
               ),
               floatingActionButton: FloatingActionButton(
-                  tooltip: 'Favorite',
+                  tooltip: 'Add',
                   child: const Icon(Icons.add),
                   onPressed: () async {
                     textController.text = "";
@@ -489,7 +506,7 @@ class _ListOf_filmsState extends State<ListOf_films> {
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount:
                           (orientation == Orientation.portrait) ? 2 : 3,
-                      childAspectRatio: 0.75,
+                      childAspectRatio: 0.66,
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 10),
                   itemBuilder: (BuildContext context, int index) {
