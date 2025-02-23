@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:namer_app/bookstack.dart';
 import 'package:namer_app/filmstack.dart';
+import 'package:namer_app/ftree.dart';
 import 'package:namer_app/ideas.dart';
 import 'package:namer_app/models/problem_model.dart';
 import 'package:namer_app/models/film_model.dart';
@@ -340,7 +341,7 @@ class MainPage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) {
-                            return Placeholder();
+                            return FtreePage();
                           }),
                         )
                       },

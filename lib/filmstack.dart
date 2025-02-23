@@ -18,7 +18,7 @@ class _FilmStackPageState extends State<FilmStackPage> {
   final filmKey = GlobalKey<_ListOf_filmsState>();
   double rating = 0.0;
   String sortingDropdown = "asc_title";
-  bool isGrid = false, isSeen = false;
+  bool isGridView = false, SeenDisplay = false, isSeenform = true;
   String display = "list";
   @override
   @override
@@ -158,13 +158,13 @@ class _FilmStackPageState extends State<FilmStackPage> {
                           padding: EdgeInsets.only(left: 4, right: 4, top: 0),
                           icon: Padding(
                               padding: EdgeInsets.all(8.0),
-                              child: isSeen == true
+                              child: SeenDisplay == true
                                   ? Icon(Icons.visibility_outlined)
                                   : Icon(Icons.visibility_off_outlined)),
                           onPressed: () {
                             setState(() {
-                              isSeen = !isSeen;
-                              // if (isSeen)
+                              SeenDisplay = !SeenDisplay;
+                              // if (SeenDisplay)
                               //   display = "grid";
                               // else
                               //   display = "list";
@@ -176,13 +176,13 @@ class _FilmStackPageState extends State<FilmStackPage> {
                             padding: EdgeInsets.only(left: 4, right: 4, top: 0),
                             icon: Padding(
                                 padding: EdgeInsets.all(8.0),
-                                child: isGrid == true
+                                child: isGridView == true
                                     ? Icon(Icons.view_list)
                                     : Icon(Icons.dashboard)),
                             onPressed: () {
                               setState(() {
-                                isGrid = !isGrid;
-                                if (isGrid)
+                                isGridView = !isGridView;
+                                if (isGridView)
                                   display = "grid";
                                 else
                                   display = "list";
@@ -197,6 +197,7 @@ class _FilmStackPageState extends State<FilmStackPage> {
                     key: filmKey,
                     sorting: sortingDropdown,
                     display: display,
+                    SeenDisplay: SeenDisplay,
                   )))
                 ],
               ),
@@ -206,6 +207,7 @@ class _FilmStackPageState extends State<FilmStackPage> {
                   onPressed: () async {
                     textController.text = "";
                     rating = 2.5;
+                    isSeenform = false;
                     showDialog(
                         context: context,
                         builder: (BuildContext context) {
@@ -244,6 +246,44 @@ class _FilmStackPageState extends State<FilmStackPage> {
                                                           }
                                                           return null;
                                                         }),
+                                                    Container(
+                                                      margin:
+                                                          EdgeInsets.fromLTRB(
+                                                              0, 10, 0, 5),
+                                                      child: SegmentedButton<
+                                                              bool>(
+                                                          showSelectedIcon:
+                                                              false,
+                                                          segments: const <ButtonSegment<
+                                                              bool>>[
+                                                            ButtonSegment<bool>(
+                                                                value: true,
+                                                                label: Text(
+                                                                    'Seen'),
+                                                                icon: Icon(Icons
+                                                                    .visibility_outlined)),
+                                                            ButtonSegment<bool>(
+                                                                value: false,
+                                                                label: Text(
+                                                                    'Not seen'),
+                                                                icon: Icon(Icons
+                                                                    .visibility_off_outlined)),
+                                                          ],
+                                                          selected:
+                                                              isSeenform == null
+                                                                  ? {}
+                                                                  : {
+                                                                      isSeenform!
+                                                                    },
+                                                          onSelectionChanged:
+                                                              (newSelection) {
+                                                            setState(() {
+                                                              isSeenform =
+                                                                  newSelection
+                                                                      .first;
+                                                            });
+                                                          }),
+                                                    ),
                                                     PannableRatingBar(
                                                       rate: rating,
                                                       items: List.generate(
@@ -280,6 +320,7 @@ class _FilmStackPageState extends State<FilmStackPage> {
                                                     final state =
                                                         filmKey.currentState!;
                                                     state.addFilm(
+                                                        isSeenform,
                                                         textController.text,
                                                         "poster",
                                                         rating * 2,
@@ -302,7 +343,12 @@ class _FilmStackPageState extends State<FilmStackPage> {
 
 class ListOf_films extends StatefulWidget {
   final String sorting, display;
-  ListOf_films({Key? key, required this.sorting, required this.display})
+  bool SeenDisplay;
+  ListOf_films(
+      {Key? key,
+      required this.sorting,
+      required this.display,
+      required this.SeenDisplay})
       : super(key: key);
 
   @override
@@ -331,9 +377,15 @@ class _ListOf_filmsState extends State<ListOf_films> {
     return boxFilms.toMap();
   }
 
-  Future<void> addFilm(title, poster, myRating, imdbRating, plot, year) async {
+  Future<void> addFilm(seen, title,
+      [poster = "",
+      myRating = 0,
+      imdbRating = 0,
+      plot = "",
+      year = 1970]) async {
     setState(() {
       boxFilms.add(Film(
+          seen: seen,
           title: title,
           poster: poster,
           myRating: myRating,
@@ -360,6 +412,8 @@ class _ListOf_filmsState extends State<ListOf_films> {
       future: buildWidget(),
       builder: (BuildContext context, snapshot) {
         var sdata = snapshot.data;
+        // sdata =sdata!.entries.where((seen) => seen == 0) as Map;
+        print(sdata!.entries.toList().where((element) => true));
         if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.hasError) {
             return Text(snapshot.error.toString());
@@ -394,32 +448,70 @@ class _ListOf_filmsState extends State<ListOf_films> {
                 itemCount: sdata?.length,
                 itemBuilder: (BuildContext context, int index) {
                   var element = sEntries?.entries.elementAt(index).value;
-
-                  return GestureDetector(
-                    onTap: () => {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) {
-                          // return FilmPage(title: element.title,type:element.type,description: element.description);
-                          return Placeholder();
-                        }),
-                      )
-                    },
-                    child: IntrinsicHeight(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Expanded(
+                  if (widget.SeenDisplay == element.seen) {
+                    return GestureDetector(
+                      onTap: () => {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) {
+                            // return FilmPage(title: element.title,type:element.type,description: element.description);
+                            return Placeholder();
+                          }),
+                        )
+                      },
+                      child: IntrinsicHeight(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Expanded(
+                                child: Container(
+                                    margin: EdgeInsets.fromLTRB(5, 0, 0, 5),
+                                    decoration: BoxDecoration(
+                                      color: context.isDarkMode
+                                          ? Colors.grey[700]
+                                          : Colors.grey[200],
+                                      borderRadius: const BorderRadius.only(
+                                          topLeft: Radius.circular(12),
+                                          bottomLeft: Radius.circular(12)),
+                                      border: Border(
+                                        top: BorderSide(
+                                            color: Colors.grey
+                                                .shade900, // Set border color
+                                            width: 1.0),
+                                        right: BorderSide(
+                                            color: Colors.grey
+                                                .shade900, // Set border color
+                                            width: 0.0),
+                                        bottom: BorderSide(
+                                            color: Colors.grey
+                                                .shade900, // Set border color
+                                            width: 1.0),
+                                        left: BorderSide(
+                                            color: Colors.grey
+                                                .shade900, // Set border color
+                                            width: 1.0),
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Text(element.title,
+                                          textAlign: TextAlign.start,
+                                          style: TextStyle(
+                                              color: context.isDarkMode
+                                                  ? Colors.grey.shade100
+                                                  : const Color.fromARGB(
+                                                      255, 2, 2, 2),
+                                              fontFamily: 'Oswald',
+                                              fontWeight: FontWeight.w300,
+                                              fontSize: 16)),
+                                    ))),
+                            Container(
+                              height: 60,
+                              width: 100,
+                              margin: EdgeInsets.fromLTRB(0, 0, 5, 5),
                               child: Container(
-                                  margin: EdgeInsets.fromLTRB(5, 0, 0, 5),
-                                  decoration: BoxDecoration(
-                                    color: context.isDarkMode
-                                        ? Colors.grey[700]
-                                        : Colors.grey[200],
-                                    borderRadius: const BorderRadius.only(
-                                        topLeft: Radius.circular(12),
-                                        bottomLeft: Radius.circular(12)),
+                                decoration: BoxDecoration(
+                                    color: Colors.amber,
                                     border: Border(
                                       top: BorderSide(
                                           color: Colors.grey
@@ -428,7 +520,7 @@ class _ListOf_filmsState extends State<ListOf_films> {
                                       right: BorderSide(
                                           color: Colors.grey
                                               .shade900, // Set border color
-                                          width: 0.0),
+                                          width: 1.0),
                                       bottom: BorderSide(
                                           color: Colors.grey
                                               .shade900, // Set border color
@@ -436,64 +528,30 @@ class _ListOf_filmsState extends State<ListOf_films> {
                                       left: BorderSide(
                                           color: Colors.grey
                                               .shade900, // Set border color
-                                          width: 1.0),
+                                          width: 0.0),
+                                    ), // Set border width
+                                    borderRadius: BorderRadius.only(
+                                        topRight: Radius.circular(10.0),
+                                        bottomRight: Radius.circular(10.0))
+                                    // Set rounded corner radius
                                     ),
-                                  ),
-                                  child: Center(
-                                    child: Text(element.title,
-                                        textAlign: TextAlign.start,
+                                child: Center(
+                                    child: Text(
                                         style: TextStyle(
-                                            color: context.isDarkMode
-                                                ? Colors.grey.shade100
-                                                : const Color.fromARGB(
-                                                    255, 2, 2, 2),
-                                            fontFamily: 'Oswald',
-                                            fontWeight: FontWeight.w300,
-                                            fontSize: 16)),
-                                  ))),
-                          Container(
-                            height: 60,
-                            width: 100,
-                            margin: EdgeInsets.fromLTRB(0, 0, 5, 5),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.amber,
-                                  border: Border(
-                                    top: BorderSide(
-                                        color: Colors
-                                            .grey.shade900, // Set border color
-                                        width: 1.0),
-                                    right: BorderSide(
-                                        color: Colors
-                                            .grey.shade900, // Set border color
-                                        width: 1.0),
-                                    bottom: BorderSide(
-                                        color: Colors
-                                            .grey.shade900, // Set border color
-                                        width: 1.0),
-                                    left: BorderSide(
-                                        color: Colors
-                                            .grey.shade900, // Set border color
-                                        width: 0.0),
-                                  ), // Set border width
-                                  borderRadius: BorderRadius.only(
-                                      topRight: Radius.circular(10.0),
-                                      bottomRight: Radius.circular(10.0))
-                                  // Set rounded corner radius
-                                  ),
-                              child: Center(
-                                  child: Text(
-                                      style: TextStyle(
-                                          fontFamily: 'Koulen',
-                                          color: Colors.black87,
-                                          fontSize: 24),
-                                      element.myRating.toString())),
-                            ),
-                          )
-                        ],
+                                            fontFamily: 'Koulen',
+                                            color: Colors.black87,
+                                            fontSize: 24),
+                                        element.myRating.toString())),
+                              ),
+                            )
+                          ],
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  }
+                  else{
+                    return Container();
+                  }
                 },
               );
             } else if (widget.display == "grid") {
@@ -505,13 +563,13 @@ class _ListOf_filmsState extends State<ListOf_films> {
                   itemCount: sdata?.length,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount:
-                          (orientation == Orientation.portrait) ? 2 : 3,
+                          (orientation == Orientation.portrait) ? 2  : 4,
                       childAspectRatio: 0.66,
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 10),
                   itemBuilder: (BuildContext context, int index) {
                     var element = sEntries?.entries.elementAt(index).value;
-
+                    if (widget.SeenDisplay == element.seen) {
                     return Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15),
@@ -522,6 +580,10 @@ class _ListOf_filmsState extends State<ListOf_films> {
                       child: Text(element.title.toString(),
                           style: TextStyle(color: Colors.black)),
                     );
+                    }
+                    else{
+                      return Container();
+                    }
                   });
             } else
               return Placeholder();

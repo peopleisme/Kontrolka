@@ -27,6 +27,9 @@ dependencies:
   flutter_pannable_rating_bar: ^2.7.2+1
   http: ^1.1.0
   flutter_svg: ^2.0.10+1
+  realm: ^1.6.0
+  mongo_dart: ^0.10.0
+  mysql_client: ^0.0.27
 
 dev_dependencies:
   flutter_test:

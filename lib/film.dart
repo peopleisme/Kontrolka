@@ -8,8 +8,10 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 class FilmPage extends StatefulWidget {
   final String title, poster, plot, year;
   final double myRating, imdbRating;
+  final bool seen;
   const FilmPage(
       {super.key,
+      required this.seen,
       required this.title,
       required this.poster,
       required this.myRating,
