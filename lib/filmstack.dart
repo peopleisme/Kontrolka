@@ -2,18 +2,16 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:hive/hive.dart';
 import 'package:flutter_pannable_rating_bar/flutter_pannable_rating_bar.dart';
 import 'package:provider/provider.dart';
 import 'color_schemes.g.dart';
 import 'main.dart';
 import 'models/boxes.dart';
 import 'models/film_model.dart';
-import 'package:http/http.dart' as http;
 import 'dart:ui';
 
 class _FilmStackPageState extends State<FilmStackPage> {
-  final textController = new TextEditingController();
+  final textController = TextEditingController();
   final FilmFormKey = GlobalKey<FormState>();
   final filmKey = GlobalKey<_ListOf_filmsState>();
   double rating = 0.0;
@@ -585,8 +583,9 @@ class _ListOf_filmsState extends State<ListOf_films> {
                       return Container();
                     }
                   });
-            } else
+            } else {
               return Placeholder();
+            }
           }
         } else {
           return Text("nie wiem co robie sorki");

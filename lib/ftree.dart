@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:intl/intl.dart';
+import 'package:mongo_dart/mongo_dart.dart' as mongo;
 import 'package:provider/provider.dart';
 import 'color_schemes.g.dart';
 import 'main.dart';
 import 'dart:ui' as ui;
-import 'package:mysql_client/mysql_client.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -43,62 +42,141 @@ Osoba ja = Osoba(imie: 'Ja', id: '5', dzieci: []);
 
 List<Osoba> rodzina = [dziadek, babcia, tata, mama, ja];
 
-class MyPainter extends CustomPainter {
-  final Osoba osoba;
-  final double xStart;
-  final double yStart;
-  final double verticalSpacing;
-  final double horizontalSpacing;
-  final Future<List> family;
-  final Future<List> relation;
+class FamilyMember {
+  final double x;
+  final double y;
+  final int id;
+  final String imie;
+  final String nazwisko;
+  final int relacja;
+  final String plec;
 
-  MyPainter(
-      {required this.osoba,
-      required this.xStart,
-      required this.yStart,
-      required this.family,
-      required this.relation,
-      this.verticalSpacing = 10,
-      this.horizontalSpacing = 15});
+  FamilyMember({
+    required this.x,
+    required this.y,
+    required this.id,
+    required this.imie,
+    required this.nazwisko,
+    required this.relacja,
+    required this.plec,
+  });
+}
+
+class MyPainter extends CustomPainter {
+  Osoba osoba;
+  double xStart;
+  double yStart;
+  double width;
+  double height;
+  double verticalSpacing;
+  double horizontalSpacing;
+  double mouseX;
+  double mouseY;
+  double scale;
+  double personW;
+  double personH;
+  double index;
+  Future<List> family;
+  Future<List> relation;
+  String membersString = "";
+  bool mouseDown;
+  // final double ViewX;
+  // final double ViewY;
+
+  MyPainter({
+    required this.osoba,
+    required this.xStart,
+    required this.yStart,
+    required this.width,
+    required this.height,
+    this.verticalSpacing = 10,
+    this.horizontalSpacing = 15,
+    this.mouseX = 0,
+    this.mouseY = 0,
+    this.scale = 1,
+    this.personW = 45,
+    this.personH = 35,
+    this.index = 73,
+    required this.family,
+    required this.relation,
+    this.membersString = "",
+    this.mouseDown = false,
+    // this.ViewX = width  / -2,
+    // this.ViewY = this.height / -2,
+  });
 
   @override
   Future<void> paint(Canvas canvas, Size size) async {
-    _paintOsoba(canvas, size, osoba, xStart, yStart);
-    print(await family);
+    // _paintOsoba(canvas, size, osoba, xStart, yStart);
+    //  print(await family);
+    var family = await fmember();
+    var relation = await frelation();
+    await drawTree(family, relation, index, 500, 500, 0);
+    print(membersString);
+    List<dynamic> membersList = jsonDecode(membersString) as List<dynamic>;
+
+    Paint paint = Paint()
+      ..color = Colors.blue
+      ..style = PaintingStyle.fill;
+
+    // Rect rect = new Rect.fromLTWH(0, 0, 120, 40);
+//canvas.drawRect(rect, paint);
+
+    membersList.forEach((element) {
+      TextPainter textPainter = TextPainter(
+          text: TextSpan(
+            text: element[3],
+            style: TextStyle(color: Colors.black, fontSize: 16),
+          ),
+          textDirection: ui.TextDirection.ltr);
+      textPainter.layout();
+      textPainter.paint(canvas, Offset(element[1] + 10, element[2] + 10));
+    });
   }
 
-  int getIndexbyID(table, id) {
-    return table[id];
+  int getIndexbyID(List<dynamic> table, id) {
+    // return table ['id'];
+
+    int counter = 0;
+    int result = 0;
+    table.forEach((element) {
+      if (element['id'].toInt() == id) {
+        result = counter;
+      } else
+        counter++;
+    });
+    return result;
   }
 
   int calculateKnownParents(family, relation, index) {
     //console.log("calculateKnownParents: ",family[getIndexbyID(family,index)].imie , family[getIndexbyID(family,index)].Nazwisko)
-    if (family[getIndexbyID(family, index)].relacja == 0) return 2;
+    if (family[getIndexbyID(family, index)]['relacja'] == 0) return 2;
 
     var KnownParents = calculateKnownParents(
             family,
             relation,
             relation[getIndexbyID(
-                    relation, family[getIndexbyID(family, index)].relacja)]
-                .Male) +
+                    relation, family[getIndexbyID(family, index)]['relacja'])]
+                ['Male']) +
         calculateKnownParents(
             family,
             relation,
             relation[getIndexbyID(
-                    relation, family[getIndexbyID(family, index)].relacja)]
-                .Female) +
+                    relation, family[getIndexbyID(family, index)]['relacja'])]
+                ['Female']) +
         2;
 
     return KnownParents;
   }
 
   List getKnownSiblings(family, relation, index) {
-    var relationID = family[getIndexbyID(family, index)].relacja;
+    var relationID = family[getIndexbyID(family, index)]['relacja'];
     var siblingsArray = [];
 
     for (var element in family) {
-      if (element.relacja == relationID && element.id != index)
-        siblingsArray.add(element.id);
+      if (element['relacja'] == relationID && element['id'] != index) {
+        siblingsArray.add(element['id']);
+      }
     }
 
     return siblingsArray;
@@ -108,9 +186,10 @@ class MyPainter extends CustomPainter {
     var relationID = 0;
 
     for (var element in relation) {
-      if (element.Male == index || element.Female == index)
-        relationID = element
-            .id; //jeżeli ma obsługiwać dzieci z więcej niż jednego małżeństwa tu musi zwracać array
+      if (element['Male'] == index || element['Female'] == index) {
+        relationID = element[
+            'id']; //jeżeli ma obsługiwać dzieci z więcej niż jednego małżeństwa tu musi zwracać array
+      }
     }
     return relationID;
   }
@@ -121,7 +200,7 @@ class MyPainter extends CustomPainter {
     if (relationID == 0) return [];
 
     for (var element in family) {
-      if (element.relacja == relationID) childArray.add(element);
+      if (element['relacja'] == relationID) childArray.add(element);
     }
     return childArray;
   }
@@ -135,7 +214,7 @@ class MyPainter extends CustomPainter {
     }
 
     for (var element in getKnownChildren(family, relation, index)) {
-      print(element);
+      //print(element);
       level++;
       result =
           counter[0] += calculateKnownChildren(family, relation, element.id);
@@ -143,45 +222,72 @@ class MyPainter extends CustomPainter {
     return result;
   }
 
-  void _paintOsoba(Canvas canvas, Size size, Osoba osoba, double x, double y) {
-    // Rysowanie prostokąta reprezentującego osobę
-    Paint paint = Paint()
-      ..color = Colors.blue
-      ..style = PaintingStyle.fill;
-
-    Rect rect = Rect.fromLTWH(x, y, 120, 40);
-    canvas.drawRect(rect, paint);
-
-    // Rysowanie tekstu z imieniem osoby
-    TextPainter textPainter = TextPainter(
-        text: TextSpan(
-          text: osoba.imie,
-          style: TextStyle(color: Colors.black, fontSize: 16),
-        ),
-        textDirection: ui.TextDirection.ltr);
-    textPainter.layout();
-    textPainter.paint(canvas, Offset(x + 10, y + 10));
-
-    // Rysowanie linii do dzieci
-    if (osoba.dzieci.isNotEmpty) {
-      double childX = x - (osoba.dzieci.length - 1) * horizontalSpacing / 2;
-      double childY = y + verticalSpacing;
-
-      for (var dziecko in osoba.dzieci) {
-        // Rysowanie linii do dziecka
-        Paint linePaint = Paint()
-          ..color = Colors.black
-          ..strokeWidth = 2;
-
-        canvas.drawLine(
-            Offset(x + 60, y + 40), Offset(childX + 60, childY), linePaint);
-
-        // Rekurencyjne rysowanie drzewa dla dziecka
-        _paintOsoba(canvas, size, dziecko, childX, childY);
-
-        childX += horizontalSpacing;
-      }
+  addMember(x, y, id, imie, nazwisko, relacja, plec) {
+    List<dynamic> membersList = [];
+    if (membersString.isEmpty) {
+      membersList = [
+        [
+          id,
+          x.toDouble(),
+          y.toDouble(),
+          imie.toString(),
+          nazwisko,
+          relacja,
+          plec.toString()
+        ]
+      ];
+    } else {
+      membersList = jsonDecode(membersString) as List<dynamic>;
+      membersList.add([
+        id,
+        x.toDouble(),
+        y.toDouble(),
+        imie.toString(),
+        nazwisko,
+        relacja,
+        plec.toString()
+      ]);
     }
+    membersString = jsonEncode(membersList);
+  }
+
+  Future<int> drawTree(family, relation, index, x, y, level) async {
+    //console.log("drawTree: ",family[getIndexbyID(family,index)].imie , family[getIndexbyID(family,index)].Nazwisko)
+    //console.log(calculateKnownParents(family,relation,index))
+
+    if (level > 0 && family[getIndexbyID(family, index)]['Plec'] == "M") {
+      x = x - (calculateKnownParents(family, relation, index) + 1) * personW;
+      y = y - level * personH;
+    } else if (level > 0 &&
+        family[getIndexbyID(family, index)]['Plec'] == "K") {
+      x = x + (calculateKnownParents(family, relation, index) + 1) * personW;
+      y = y - level * personH;
+    }
+    var current = family[getIndexbyID(family, index)];
+    //ctx.strokeText(family[getIndexbyID(family,index)].imie+" "+family[getIndexbyID(family,index)].Nazwisko, x, y);
+    addMember(x, y, current['id'], current['imie'], current['Nazwisko'],
+        current['relacja'], current['Plec']);
+    if (family[getIndexbyID(family, index)]['relacja'] == 0) return 0;
+    var KnownParents = await drawTree(
+            family,
+            relation,
+            relation[getIndexbyID(
+                    relation, family[getIndexbyID(family, index)]['relacja'])]
+                ['Male'],
+            x,
+            y,
+            level = level + 1) +
+        await drawTree(
+            family,
+            relation,
+            relation[getIndexbyID(
+                    relation, family[getIndexbyID(family, index)]['relacja'])]
+                ['Female'],
+            x,
+            y,
+            level) +
+        2;
+    return KnownParents;
   }
 
   @override
@@ -247,11 +353,14 @@ class _FtreePageState extends State<FtreePage> {
                   color: Colors.white,
                   child: CustomPaint(
                     painter: MyPainter(
-                        osoba: rodzina.first,
-                        xStart: 250,
-                        yStart: 200,
-                        family: fmember(),
-                        relation: frelation()),
+                      osoba: rodzina.first,
+                      xStart: 250,
+                      yStart: 200,
+                      family: fmember(),
+                      relation: frelation(),
+                      width: MediaQuery.sizeOf(context).width,
+                      height: MediaQuery.sizeOf(context).height,
+                    ),
                   ),
                 ),
               ),
