@@ -18,7 +18,7 @@ class _FilmStackPageState extends State<FilmStackPage> {
   String sortingDropdown = "asc_title";
   bool isGridView = false, SeenDisplay = false, isSeenform = true;
   String display = "list";
-  @override
+  
   @override
   void initState() {
     super.initState();
