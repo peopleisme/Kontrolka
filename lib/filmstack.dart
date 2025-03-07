@@ -18,7 +18,7 @@ class _FilmStackPageState extends State<FilmStackPage> {
   String sortingDropdown = "asc_title";
   bool isGridView = false, SeenDisplay = false, isSeenform = true;
   String display = "list";
-  
+
   @override
   void initState() {
     super.initState();
@@ -180,10 +180,11 @@ class _FilmStackPageState extends State<FilmStackPage> {
                             onPressed: () {
                               setState(() {
                                 isGridView = !isGridView;
-                                if (isGridView)
+                                if (isGridView) {
                                   display = "grid";
-                                else
+                                } else {
                                   display = "list";
+                                }
                               });
                             }),
                       ],
@@ -411,30 +412,34 @@ class _ListOf_filmsState extends State<ListOf_films> {
       builder: (BuildContext context, snapshot) {
         var sdata = snapshot.data;
         // sdata =sdata!.entries.where((seen) => seen == 0) as Map;
-        print(sdata!.entries.toList().where((element) => true));
+        //print(sdata!.entries.toList().where((element) => true));
         if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           } else {
-            var sEntries;
+            Map<dynamic, dynamic> MapEntries;
+            List<dynamic> sEntries;
+            MapEntries = Map.fromEntries(sdata!.entries
+                .where((element) => element.value.seen == widget.SeenDisplay));
+            sEntries = MapEntries.entries.toList();
             switch (widget.sorting) {
               case "asc_title":
-                sEntries = Map.fromEntries(sdata!.entries.toList()
-                  ..sort((e1, e2) => e1.value.title.compareTo(e2.value.title)));
+                sEntries = sEntries
+                  ..sort((e1, e2) => e1.value.title.compareTo(e2.value.title));
                 break;
               case "desc_title":
-                sEntries = Map.fromEntries(sdata!.entries.toList()
-                  ..sort((e1, e2) => e2.value.title.compareTo(e1.value.title)));
+                sEntries = sEntries
+                  ..sort((e1, e2) => e2.value.title.compareTo(e1.value.title));
                 break;
               case "asc_rating":
-                sEntries = Map.fromEntries(sdata!.entries.toList()
+                sEntries = sEntries
                   ..sort((e1, e2) =>
-                      e1.value.myRating.compareTo(e2.value.myRating)));
+                      e1.value.myRating.compareTo(e2.value.myRating));
                 break;
               case "desc_rating":
-                sEntries = Map.fromEntries(sdata!.entries.toList()
+                sEntries = sEntries
                   ..sort((e1, e2) =>
-                      e2.value.myRating.compareTo(e1.value.myRating)));
+                      e2.value.myRating.compareTo(e1.value.myRating));
                 break;
             }
             if (widget.display == "list") {
@@ -443,16 +448,15 @@ class _ListOf_filmsState extends State<ListOf_films> {
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 padding: const EdgeInsets.all(8),
-                itemCount: sdata?.length,
+                itemCount: sEntries.length,
                 itemBuilder: (BuildContext context, int index) {
-                  var element = sEntries?.entries.elementAt(index).value;
+                  var element = sEntries.elementAt(index).value;
                   if (widget.SeenDisplay == element.seen) {
                     return GestureDetector(
                       onTap: () => {
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) {
-                            // return FilmPage(title: element.title,type:element.type,description: element.description);
                             return Placeholder();
                           }),
                         )
@@ -546,8 +550,7 @@ class _ListOf_filmsState extends State<ListOf_films> {
                         ),
                       ),
                     );
-                  }
-                  else{
+                  } else {
                     return Container();
                   }
                 },
@@ -558,16 +561,15 @@ class _ListOf_filmsState extends State<ListOf_films> {
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(8),
-                  itemCount: sdata?.length,
+                  itemCount: sEntries.length,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount:
-                          (orientation == Orientation.portrait) ? 2  : 4,
+                          (orientation == Orientation.portrait) ? 2 : 4,
                       childAspectRatio: 0.66,
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 10),
                   itemBuilder: (BuildContext context, int index) {
-                    var element = sEntries?.entries.elementAt(index).value;
-                    if (widget.SeenDisplay == element.seen) {
+                    var element = sEntries.elementAt(index).value;
                     return Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15),
@@ -578,10 +580,6 @@ class _ListOf_filmsState extends State<ListOf_films> {
                       child: Text(element.title.toString(),
                           style: TextStyle(color: Colors.black)),
                     );
-                    }
-                    else{
-                      return Container();
-                    }
                   });
             } else {
               return Placeholder();
