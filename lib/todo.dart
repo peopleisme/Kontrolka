@@ -12,8 +12,6 @@ class Task {
   Task({required this.task, required this.date, required this.isChecked});
 }
 
-
-
 class TodoApp extends StatelessWidget {
   const TodoApp({super.key});
 
@@ -187,53 +185,57 @@ class _TodoPageState extends State<TodoPage> {
                             ),
                             const VerticalDivider(thickness: 1, width: 1),
                             Container(
-                              color: Colors.amberAccent,
                               width: MediaQuery.of(context).size.width - 81,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  ListView.separated(
-                                    scrollDirection: Axis.vertical,
-                                    shrinkWrap: true,
-                                    physics: NeverScrollableScrollPhysics(),
-                                    padding: const EdgeInsets.all(8),
-                                    itemCount: entries.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      return CheckboxListTile(
-                                          title: Text(
-                                            entries[index].task +
-                                                entries[index].date,
-                                            style: TextStyle(
-                                                decoration: getBooleanValue(
-                                                        entries[index].isChecked)
-                                                    ? TextDecoration.lineThrough
-                                                    : TextDecoration.none,
-                                                decorationThickness: 2.0),
-                                          ),
-                                          controlAffinity:
-                                              ListTileControlAffinity.leading,
-                                          value: entries[index].isChecked,
-                                          onChanged: (bool? value) {
-                                            setState(() {
-                                              entries[index].isChecked =
-                                                  value!;
-                                            });
-                                          }
-                                          // secondary: const Icon(Icons.hourglass_empty),
-                                          );
-                                    },
-                                    separatorBuilder:
-                                        (BuildContext context, int index) {
-                                      return Divider(
-                                        color: context.isDarkMode
-                                            ? Colors.white
-                                            : Colors.grey[800],
-                                        thickness: .5,
-                                      );
-                                    },
-                                  ),
-                                ],
+                              height: double.infinity,
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    ListView.separated(
+                                      scrollDirection: Axis.vertical,
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      padding: const EdgeInsets.all(8),
+                                      itemCount: entries.length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return CheckboxListTile(
+                                            title: Text(
+                                              entries[index].task +
+                                                  entries[index].date,
+                                              style: TextStyle(
+                                                  decoration: getBooleanValue(
+                                                          entries[index]
+                                                              .isChecked)
+                                                      ? TextDecoration
+                                                          .lineThrough
+                                                      : TextDecoration.none,
+                                                  decorationThickness: 2.0),
+                                            ),
+                                            controlAffinity:
+                                                ListTileControlAffinity.leading,
+                                            value: entries[index].isChecked,
+                                            onChanged: (bool? value) {
+                                              setState(() {
+                                                entries[index].isChecked =
+                                                    value!;
+                                              });
+                                            }
+                                            // secondary: const Icon(Icons.hourglass_empty),
+                                            );
+                                      },
+                                      separatorBuilder:
+                                          (BuildContext context, int index) {
+                                        return Divider(
+                                          color: context.isDarkMode
+                                              ? Colors.white
+                                              : Colors.grey[800],
+                                          thickness: .5,
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ],
@@ -302,10 +304,9 @@ class _TodoPageState extends State<TodoPage> {
                                       entries = [
                                         ...entries,
                                         Task(
-                                          task: taskController.text,
-                                          date: dateController.text,
-                                          isChecked: false
-                                        )
+                                            task: taskController.text,
+                                            date: dateController.text,
+                                            isChecked: false)
                                       ];
                                     });
                                     taskController.clear();
