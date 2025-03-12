@@ -51,7 +51,8 @@ class _TodoPageState extends State<TodoPage> {
   bool isDaily = false;
   NavigationRailLabelType labelType = NavigationRailLabelType.all;
   bool submit = false;
-  String formattedDate = "";
+  String formattedDate = DateFormat('dd.MM.yyyy').format(
+      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day));
 
   @override
   void initState() {
@@ -71,7 +72,6 @@ class _TodoPageState extends State<TodoPage> {
     final _formKey = GlobalKey<FormState>();
     String todayDate = DateFormat('dd.MM.yyyy').format(DateTime(
         DateTime.now().year, DateTime.now().month, DateTime.now().day));
-    formattedDate = todayDate;
 
     return LayoutBuilder(builder: (context, constraints) {
       return MaterialApp(
@@ -126,6 +126,155 @@ class _TodoPageState extends State<TodoPage> {
                 ),
                 centerTitle: true,
               ),
+              drawer: Drawer(
+                child: ListView(
+                  children: [
+                    FloatingActionButton(
+                      tooltip: 'Select Day',
+                      elevation: 0,
+                      onPressed: () async {
+                        DateTime? pickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(1950),
+                            lastDate: DateTime(2100));
+
+                        if (pickedDate != null) {
+                          formattedDate =
+                              DateFormat('dd.MM.yyyy').format(pickedDate);
+                          setState(() {
+                            dateController.text = formattedDate;
+                            print((formattedDate));
+
+                            //set output date to TextField value.
+                          });
+                        } else {}
+                      },
+                      child: const Icon(Icons.calendar_month_outlined),
+                    ),
+                    Padding(padding: EdgeInsets.fromLTRB(0, 7, 0, 0)),
+                    FloatingActionButton(
+                      tooltip: 'New Task List',
+                      elevation: 0,
+                      onPressed: () {
+                        taskListController.text = "";
+                        isDaily = false;
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return StatefulBuilder(
+                                  builder: (context, setState) => Dialog(
+                                        child: SizedBox(
+                                            width: 220,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(26.0),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Text("New List",
+                                                      textWidthBasis:
+                                                          TextWidthBasis
+                                                              .longestLine,
+                                                      style: TextStyle(
+                                                          fontSize: 24),
+                                                      textAlign:
+                                                          TextAlign.start),
+                                                  Form(
+                                                    // key:
+                                                    //     FilmFormKey,
+                                                    child: Column(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: <Widget>[
+                                                        TextFormField(
+                                                            controller:
+                                                                taskListController,
+                                                            decoration:
+                                                                InputDecoration(
+                                                              labelText:
+                                                                  'Title',
+                                                            ),
+                                                            validator: (value) {
+                                                              if (value ==
+                                                                      null ||
+                                                                  value
+                                                                      .isEmpty) {
+                                                                return 'Input film!';
+                                                              }
+                                                              return null;
+                                                            }),
+                                                        Container(
+                                                          margin: EdgeInsets
+                                                              .fromLTRB(
+                                                                  0, 10, 0, 5),
+                                                          child: SegmentedButton<
+                                                                  bool>(
+                                                              showSelectedIcon:
+                                                                  false,
+                                                              segments: const <ButtonSegment<
+                                                                  bool>>[
+                                                                ButtonSegment<
+                                                                        bool>(
+                                                                    value: true,
+                                                                    label: Text(
+                                                                        'Daily'),
+                                                                    icon: Icon(Icons
+                                                                        .event_rounded)),
+                                                                ButtonSegment<
+                                                                        bool>(
+                                                                    value:
+                                                                        false,
+                                                                    label: Text(
+                                                                        'Targeted'),
+                                                                    icon: Icon(Icons
+                                                                        .checklist_rounded)),
+                                                              ],
+                                                              selected:
+                                                                  isDaily ==
+                                                                          null
+                                                                      ? {}
+                                                                      : {
+                                                                          isDaily!
+                                                                        },
+                                                              onSelectionChanged:
+                                                                  (newSelection) {
+                                                                setState(() {
+                                                                  isDaily =
+                                                                      newSelection
+                                                                          .first;
+                                                                });
+                                                              }),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  OutlinedButton(
+                                                    child: Text("Add"),
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                      taskListList.add(TaskList(
+                                                          name:
+                                                              taskListController
+                                                                  .text,
+                                                          date: todayDate,
+                                                          isDaily: isDaily,
+                                                          taskList: <Task>[]));
+                                                      taskListController
+                                                          .clear();
+                                                    },
+                                                  )
+                                                ],
+                                              ),
+                                            )),
+                                      ));
+                            });
+                      },
+                      child: const Icon(Icons.add),
+                    ),
+                  ],
+                ),
+              ),
               body: Column(
                 children: [
                   Expanded(
@@ -163,10 +312,12 @@ class _TodoPageState extends State<TodoPage> {
                                             if (pickedDate != null) {
                                               formattedDate =
                                                   DateFormat('dd.MM.yyyy')
-                                                      .format(pickedDate!);
+                                                      .format(pickedDate);
                                               setState(() {
                                                 dateController.text =
                                                     formattedDate;
+                                                print((formattedDate));
+
                                                 //set output date to TextField value.
                                               });
                                             } else {}
@@ -275,18 +426,29 @@ class _TodoPageState extends State<TodoPage> {
                                     )
                                   : const SizedBox(),
                               destinations:
-                                ListView.builder(
-                                    itemCount: taskListList.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                       NavigationRailDestination(
-                                        icon: Icon(Icons.circle_outlined),
-                                        selectedIcon:
-                                            Icon(Icons.circle_rounded),
-                                        label: Text('Third'),
-                                      );
-                                    }),
-                              ,
+                                  // ListView.builder(
+                                  //     itemCount: taskListList.length,
+                                  //     itemBuilder:
+                                  //         (BuildContext context, int index) {
+                                  //        NavigationRailDestination(
+                                  //         icon: Icon(Icons.circle_outlined),
+                                  //         selectedIcon:
+                                  //             Icon(Icons.circle_rounded),
+                                  //         label: Text('Third'),
+                                  //       );
+                                  //     }),
+                                  <NavigationRailDestination>[
+                                NavigationRailDestination(
+                                  icon: Icon(Icons.circle_outlined),
+                                  selectedIcon: Icon(Icons.circle_rounded),
+                                  label: Text('Third'),
+                                ),
+                                NavigationRailDestination(
+                                  icon: Icon(Icons.circle_outlined),
+                                  selectedIcon: Icon(Icons.circle_rounded),
+                                  label: Text('Third'),
+                                )
+                              ],
                             ),
                             const VerticalDivider(thickness: 1, width: 1),
                             Container(
