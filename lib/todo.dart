@@ -24,19 +24,6 @@ class TaskList {
       required this.taskList});
 }
 
-class TodoApp extends StatelessWidget {
-  const TodoApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-          colorSchemeSeed: const Color(0xff6750a4), useMaterial3: true),
-      home: TodoPage(),
-    );
-  }
-}
-
 class _TodoPageState extends State<TodoPage> {
   final dateController = TextEditingController();
   final deadlineController = TextEditingController();

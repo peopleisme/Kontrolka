@@ -66,7 +66,7 @@ class _FilmStackPageState extends State<FilmStackPage> {
                             : Colors.grey.shade900),
                     onPressed: () => Navigator.of(context).pop(),
                   ),
-                  centerTitle: true,
+                  centerTitle: false,
                   title: Text('FILM STACK',
                       textAlign: TextAlign.start,
                       style: TextStyle(
@@ -75,7 +75,7 @@ class _FilmStackPageState extends State<FilmStackPage> {
                               : Colors.grey.shade900,
                           fontFamily: 'Koulen',
                           fontWeight: FontWeight.w500,
-                          fontSize: 24))),
+                          fontSize: 22))),
               body: Column(
                 children: [
                   Container(
