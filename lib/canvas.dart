@@ -44,6 +44,7 @@ class MyPainter extends CustomPainter {
 class _CanvasPageState extends State<CanvasPage> {
   List<drawing> offsets = <drawing>[];
   bool drawingMode = true;
+  double colorHeight = 50;
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
@@ -94,6 +95,81 @@ class _CanvasPageState extends State<CanvasPage> {
                     child: CustomPaint(
                       painter: MyPainter(offsets: offsets),
                     ),
+                  ),
+                  Container(
+                    height: 200,
+                    alignment: Alignment.bottomCenter,
+                    width: 5000,
+                    margin: EdgeInsets.fromLTRB(0, 0, 0, 15),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Container(
+                              width: 56,
+                              height: 200,
+                              color: Theme.of(context).colorScheme.secondary,
+                              child: Column(children: [
+                                IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(
+                                    Icons.horizontal_rule,
+                                    size: 32,
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(
+                                    Icons.horizontal_rule,
+                                    size: 32,
+                                    grade: 1,
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(
+                                    Icons.horizontal_rule,
+                                    size: 32,
+                                  ),
+                                ),
+                              ]),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 96,
+                          ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                curve: Curves.fastOutSlowIn,
+                                width: 56,
+                                height: colorHeight,
+                                decoration: BoxDecoration(
+                                  color: Colors.amber,
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(
+                                      width: 2,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary),
+                                  gradient: LinearGradient(
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      colors: [
+                                        Colors.red,
+                                        Colors.blue,
+                                        Colors.green,
+                                        Colors.yellow,
+                                        Colors.purple,
+                                      ]),
+                                ),
+                              ),
+                            ],
+                          )
+                        ]),
                   ),
                   Container(
                     // color: Colors.black,
@@ -154,7 +230,14 @@ class _CanvasPageState extends State<CanvasPage> {
                             ),
                             FloatingActionButton(
                                 heroTag: null,
-                                onPressed: () {},
+                                onPressed: () {
+                                  setState(() {
+                                    if (colorHeight == 50)
+                                      colorHeight = 200;
+                                    else
+                                      colorHeight = 50;
+                                  });
+                                },
                                 child: Icon(
                                   Icons.palette,
                                   size: 32,

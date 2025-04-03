@@ -16,9 +16,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'models/boxes.dart';
 import 'package:http/http.dart' as http;
 
-
 void main() async {
-  await Hive.initFlutter(); 
+  await Hive.initFlutter();
 
   Hive.registerAdapter(ProblemAdapter());
   Hive.registerAdapter(FilmAdapter());
@@ -108,7 +107,8 @@ class _MyHomePageState extends State<MyHomePage> {
     return LayoutBuilder(builder: (context, constraints) {
       return MaterialApp(
           theme: ThemeData(
-              colorSchemeSeed: const Color(0xff6750a4), useMaterial3: true),
+              colorSchemeSeed: const Color.fromRGBO(76, 175, 80, 1),
+              useMaterial3: true),
           home: Scaffold(
             appBar: AppBar(
               backgroundColor:
