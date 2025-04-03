@@ -29,7 +29,7 @@ class MyPainter extends CustomPainter {
 
     for (int i = 0; i < offsets.length - 1; i++) {
       var triangle = Path();
-      if (offsets[i].type != "break" && offsets[i+1].type != "break" ) {
+      if (offsets[i].type != "break" && offsets[i + 1].type != "break") {
         triangle.moveTo(offsets[i + 1].x, offsets[i + 1].y);
         triangle.lineTo(offsets[i].x, offsets[i].y);
         canvas.drawPath(triangle, paint);
@@ -43,6 +43,7 @@ class MyPainter extends CustomPainter {
 
 class _CanvasPageState extends State<CanvasPage> {
   List<drawing> offsets = <drawing>[];
+  bool drawingMode = true;
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
@@ -62,44 +63,121 @@ class _CanvasPageState extends State<CanvasPage> {
           darkTheme:
               ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
           home: Scaffold(
-              appBar: AppBar(
-                backgroundColor:
-                    context.isDarkMode ? Colors.grey[850] : Colors.grey[250],
-                leading: IconButton(
-                  icon: Icon(Icons.arrow_back,
-                      color: context.isDarkMode
-                          ? Colors.grey.shade100
-                          : Colors.grey.shade900),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-                centerTitle: true,
+            appBar: AppBar(
+              backgroundColor:
+                  context.isDarkMode ? Colors.grey[850] : Colors.grey[250],
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back,
+                    color: context.isDarkMode
+                        ? Colors.grey.shade100
+                        : Colors.grey.shade900),
+                onPressed: () => Navigator.of(context).pop(),
               ),
-              body: GestureDetector(
-                onPanUpdate: (DragUpdateDetails details) {
-                  setState(() {
-                    offsets.add(drawing("line", details.localPosition.dx,
-                        details.localPosition.dy, Colors.black, 5.0));
-                  });
-                },
-                onPanEnd: (DragEndDetails details) => setState(() {
-                  offsets.add(drawing("break", 0.0, 0.0, Colors.black, 0.0));
-                }),
-                child: Container(
-                  constraints: BoxConstraints.expand(),
-                  color: Colors.white,
-                  child: CustomPaint(
-                    painter: MyPainter(offsets: offsets),
+              centerTitle: true,
+            ),
+            body: GestureDetector(
+              onPanUpdate: (DragUpdateDetails details) {
+                setState(() {
+                  offsets.add(drawing("line", details.localPosition.dx,
+                      details.localPosition.dy, Colors.black, 5.0));
+                });
+              },
+              onPanEnd: (DragEndDetails details) => setState(() {
+                offsets.add(drawing("break", 0.0, 0.0, Colors.black, 0.0));
+              }),
+              child: Stack(
+                alignment: AlignmentDirectional.bottomStart,
+                children: [
+                  Container(
+                    constraints: BoxConstraints.expand(),
+                    color: Colors.white,
+                    child: CustomPaint(
+                      painter: MyPainter(offsets: offsets),
+                    ),
                   ),
-                ),
+                  Container(
+                    // color: Colors.black,
+                    height: 85,
+                    alignment: Alignment.bottomCenter,
+                    child: Center(
+                      child: Container(
+                        height: 75,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            FloatingActionButton(
+                                heroTag: null,
+                                onPressed: () {},
+                                child: Icon(
+                                  Icons.delete_forever_rounded,
+                                  size: 32,
+                                )),
+                            SizedBox(
+                              width: 15,
+                            ),
+                            FloatingActionButton(
+                                heroTag: null,
+                                onPressed: () {},
+                                child: Icon(
+                                  Icons.horizontal_rule,
+                                  size: 32,
+                                )),
+                            FloatingActionButton.large(
+                              shape: const CircleBorder(),
+                              onPressed: () {
+                                print(drawingMode);
+                                setState(() {
+                                  drawingMode = !drawingMode;
+                                });
+                              },
+                              child: AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 100),
+                                  transitionBuilder: (child, anim) =>
+                                      RotationTransition(
+                                        turns: child.key == ValueKey('icon1')
+                                            ? Tween<double>(
+                                                    begin: 0.5, end: 0.0)
+                                                .animate(anim)
+                                            : Tween<double>(begin: 1, end: 1)
+                                                .animate(anim),
+                                        child: FadeTransition(
+                                            opacity: anim, child: child),
+                                      ),
+                                  child: drawingMode
+                                      ? Icon(Icons.edit,
+                                          key: const ValueKey('icon1'))
+                                      : Icon(
+                                          Icons.pan_tool_alt,
+                                          key: const ValueKey('icon2'),
+                                        )),
+                            ),
+                            FloatingActionButton(
+                                heroTag: null,
+                                onPressed: () {},
+                                child: Icon(
+                                  Icons.palette,
+                                  size: 32,
+                                )),
+                            SizedBox(
+                              width: 15,
+                            ),
+                            FloatingActionButton(
+                                heroTag: null,
+                                onPressed: () {},
+                                child: Icon(
+                                  Icons.save_rounded,
+                                  size: 32,
+                                )),
+                          ],
+                        ),
+                      ),
+                    ),
+                  )
+                ],
               ),
-              floatingActionButton: FloatingActionButton(
-                heroTag: null,
-                tooltip: 'Favorite',
-                child: const Icon(Icons.add),
-                onPressed: () {},
-                
-              ),
-              floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,));
+            ),
+          ));
     });
   }
 }
