@@ -72,7 +72,7 @@ class _BrainstormingPageState extends State<BrainstormingPage> {
                             : Colors.grey.shade900),
                     onPressed: () => Navigator.of(context).pop(),
                   ),
-                  centerTitle: true,
+                  centerTitle: false,
                   title: Text('BRAINSTORMING',
                       textAlign: TextAlign.start,
                       style: TextStyle(
@@ -81,7 +81,7 @@ class _BrainstormingPageState extends State<BrainstormingPage> {
                               : Colors.grey.shade900,
                           fontFamily: 'Koulen',
                           fontWeight: FontWeight.w500,
-                          fontSize: 24))),
+                          fontSize: 22))),
               body: SingleChildScrollView(
                   child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,

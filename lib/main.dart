@@ -9,6 +9,7 @@ import 'package:namer_app/models/problem_model.dart';
 import 'package:namer_app/models/film_model.dart';
 import 'package:namer_app/problems.dart';
 import 'package:namer_app/todo.dart';
+import 'package:namer_app/canvases.dart';
 import 'package:provider/provider.dart';
 import 'canvas.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -84,6 +85,9 @@ class _MyHomePageState extends State<MyHomePage> {
         break;
       case 1:
         page = TodoPage();
+        break;
+      case 1:
+        page = CanvasesPage();
         break;
       case 3:
         page = FilmStackPage();
@@ -247,7 +251,7 @@ class MainPage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) {
-                            return CanvasPage();
+                            return CanvasesPage();
                           }),
                         )
                       },

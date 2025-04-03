@@ -4,18 +4,6 @@ import 'package:provider/provider.dart';
 import 'color_schemes.g.dart';
 import 'main.dart';
 
-class CanvasApp extends StatelessWidget {
-  const CanvasApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-          colorSchemeSeed: const Color(0xff6750a4), useMaterial3: true),
-      home: BookStackPage(),
-    );
-  }
-}
 
 class _BookStackPageState extends State<BookStackPage> {
   @override
@@ -47,7 +35,7 @@ class _BookStackPageState extends State<BookStackPage> {
                             : Colors.grey.shade900),
                     onPressed: () => Navigator.of(context).pop(),
                   ),
-                  centerTitle: true,
+                  centerTitle: false,
                   title: Text('BOOK STACK',
                       textAlign: TextAlign.start,
                       style: TextStyle(
@@ -56,7 +44,7 @@ class _BookStackPageState extends State<BookStackPage> {
                               : Colors.grey.shade900,
                           fontFamily: 'Koulen',
                           fontWeight: FontWeight.w500,
-                          fontSize: 24))),
+                          fontSize: 22))),
               body: SizedBox(
                 height: 10,
                 width: 10,

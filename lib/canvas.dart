@@ -5,19 +5,35 @@ import 'package:provider/provider.dart';
 import 'color_schemes.g.dart';
 import 'main.dart';
 
+class drawing {
+  final String type;
+  final double x;
+  final double y;
+  final Color color;
+  final double width;
+
+  drawing(this.type, this.x, this.y, this.color, this.width);
+}
+
 class MyPainter extends CustomPainter {
   const MyPainter({required this.offsets});
 
-  final List<Offset> offsets;
+  final List<dynamic> offsets;
 
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint();
     paint.color = Colors.blue.shade900;
     paint.strokeWidth = 5.0;
+    paint.style = PaintingStyle.stroke;
 
     for (int i = 0; i < offsets.length - 1; i++) {
-      canvas.drawLine(offsets[i], offsets[i + 1], paint);
+      var triangle = Path();
+      if (offsets[i].type != "break" && offsets[i+1].type != "break" ) {
+        triangle.moveTo(offsets[i + 1].x, offsets[i + 1].y);
+        triangle.lineTo(offsets[i].x, offsets[i].y);
+        canvas.drawPath(triangle, paint);
+      }
     }
   }
 
@@ -25,21 +41,8 @@ class MyPainter extends CustomPainter {
   bool shouldRepaint(MyPainter oldDelegate) => true;
 }
 
-class CanvasApp extends StatelessWidget {
-  const CanvasApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-          colorSchemeSeed: const Color(0xff6750a4), useMaterial3: true),
-      home: CanvasPage(),
-    );
-  }
-}
-
 class _CanvasPageState extends State<CanvasPage> {
-  List<Offset> offsets = <Offset>[];
+  List<drawing> offsets = <drawing>[];
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
@@ -74,10 +77,13 @@ class _CanvasPageState extends State<CanvasPage> {
               body: GestureDetector(
                 onPanUpdate: (DragUpdateDetails details) {
                   setState(() {
-                    offsets.add(details.localPosition);
+                    offsets.add(drawing("line", details.localPosition.dx,
+                        details.localPosition.dy, Colors.black, 5.0));
                   });
                 },
-                onPanEnd: (DragEndDetails details) => setState(() {}),
+                onPanEnd: (DragEndDetails details) => setState(() {
+                  offsets.add(drawing("break", 0.0, 0.0, Colors.black, 0.0));
+                }),
                 child: Container(
                   constraints: BoxConstraints.expand(),
                   color: Colors.white,
@@ -87,10 +93,13 @@ class _CanvasPageState extends State<CanvasPage> {
                 ),
               ),
               floatingActionButton: FloatingActionButton(
+                heroTag: null,
                 tooltip: 'Favorite',
                 child: const Icon(Icons.add),
                 onPressed: () {},
-              )));
+                
+              ),
+              floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,));
     });
   }
 }

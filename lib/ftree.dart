@@ -287,18 +287,6 @@ class _FamilyTreeState extends State<FamilyTree> {
   }
 }
 
-class FtreeApp extends StatelessWidget {
-  const FtreeApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-          colorSchemeSeed: const Color(0xff6750a4), useMaterial3: true),
-      home: FtreePage(),
-    );
-  }
-}
 
 class _FtreePageState extends State<FtreePage> {
   List<Offset> offsets = <Offset>[];
