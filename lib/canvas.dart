@@ -45,6 +45,7 @@ class _CanvasPageState extends State<CanvasPage> {
   List<drawing> offsets = <drawing>[];
   bool drawingMode = true;
   double colorHeight = 50;
+  Color currentColor = Colors.black;
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
@@ -80,7 +81,7 @@ class _CanvasPageState extends State<CanvasPage> {
               onPanUpdate: (DragUpdateDetails details) {
                 setState(() {
                   offsets.add(drawing("line", details.localPosition.dx,
-                      details.localPosition.dy, Colors.black, 5.0));
+                      details.localPosition.dy, currentColor, 5.0));
                 });
               },
               onPanEnd: (DragEndDetails details) => setState(() {
@@ -142,29 +143,33 @@ class _CanvasPageState extends State<CanvasPage> {
                           Column(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              AnimatedContainer(
-                                duration: const Duration(milliseconds: 200),
-                                curve: Curves.fastOutSlowIn,
-                                width: 56,
-                                height: colorHeight,
-                                decoration: BoxDecoration(
-                                  color: Colors.amber,
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(
-                                      width: 2,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary),
-                                  gradient: LinearGradient(
-                                      begin: Alignment.topCenter,
-                                      end: Alignment.bottomCenter,
-                                      colors: [
-                                        Colors.red,
-                                        Colors.blue,
-                                        Colors.green,
-                                        Colors.yellow,
-                                        Colors.purple,
-                                      ]),
+                              GestureDetector(
+                                onPanUpdate: (details) =>
+                                    {print(details.localPosition)},
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 200),
+                                  curve: Curves.fastOutSlowIn,
+                                  width: 56,
+                                  height: colorHeight,
+                                  decoration: BoxDecoration(
+                                    color: Colors.amber,
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                        width: 2,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary),
+                                    gradient: LinearGradient(
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                        colors: [
+                                          Colors.red,
+                                          Colors.blue,
+                                          Colors.green,
+                                          Colors.yellow,
+                                          Colors.purple,
+                                        ]),
+                                  ),
                                 ),
                               ),
                             ],
@@ -184,9 +189,21 @@ class _CanvasPageState extends State<CanvasPage> {
                           children: [
                             FloatingActionButton(
                                 heroTag: null,
-                                onPressed: () {},
+                                onPressed: () {
+                                  if (offsets[offsets.length - 1].type ==
+                                      "break") {
+                                    offsets.removeLast();
+                                  }
+                                  setState(() {
+                                    offsets = offsets.sublist(
+                                        0,
+                                        offsets.lastIndexWhere((element) =>
+                                                element.type == "break") +
+                                            1);
+                                  });
+                                },
                                 child: Icon(
-                                  Icons.delete_forever_rounded,
+                                  Icons.undo_rounded,
                                   size: 32,
                                 )),
                             SizedBox(
