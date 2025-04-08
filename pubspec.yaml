@@ -30,6 +30,7 @@ dependencies:
   realm: ^1.6.0
   mongo_dart: ^0.10.0
   mysql_client: ^0.0.27
+  image: ^4.5.4
 
 dev_dependencies:
   flutter_test:
