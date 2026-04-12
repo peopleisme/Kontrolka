@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'color_schemes.g.dart';
 import 'main.dart';
 
-
 class _BookStackPageState extends State<BookStackPage> {
   @override
   Widget build(BuildContext context) {

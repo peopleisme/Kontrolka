@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'todo_model.dart';
+part of 'task_model.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
@@ -19,7 +19,7 @@ class TaskAdapter extends TypeAdapter<Task> {
     return Task(
       task: fields[0] as String,
       time: fields[1] as String,
-      isChecked: fields[2] as String,
+      isChecked: fields[2] as bool,
     );
   }
 

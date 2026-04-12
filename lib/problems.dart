@@ -116,7 +116,8 @@ class _BrainstormingPageState extends State<BrainstormingPage> {
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: <Widget>[
                                                   TextFormField(
-                                                      controller: textController,
+                                                      controller:
+                                                          textController,
                                                       decoration:
                                                           InputDecoration(
                                                         labelText: 'Problem',
@@ -189,7 +190,7 @@ class _BrainstormingPageState extends State<BrainstormingPage> {
 
 // ignore: camel_case_types
 class ListOf_problems extends StatefulWidget {
-  ListOf_problems({Key? key}) : super(key: key);
+  ListOf_problems({super.key});
 
   @override
   _ListOf_problemsState createState() => _ListOf_problemsState();

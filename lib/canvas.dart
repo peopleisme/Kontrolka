@@ -100,8 +100,8 @@ class _CanvasPageState extends State<CanvasPage> {
             body: GestureDetector(
               onPanUpdate: (DragUpdateDetails details) {
                 setState(() {
-                  offsets.add(drawing("line", details.localPosition.dx,
-                      details.localPosition.dy, drawingColor, strokeWidth));
+                  offsets.add(drawing("line", details.localPosition.dx + 100,
+                      details.localPosition.dy + 1, drawingColor, strokeWidth));
                 });
               },
               onPanEnd: (DragEndDetails details) => setState(() {
