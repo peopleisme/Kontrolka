@@ -38,6 +38,13 @@ class _TodoPageState extends State<TodoPage> {
   }
 
   Future<Map<dynamic, dynamic>> buildWidget() async {
+    if (formattedDate ==
+            DateFormat('dd.MM.yyyy').format(DateTime(DateTime.now().year,
+                DateTime.now().month, DateTime.now().day)) &&
+        todoLists.length == 0) {
+      addTodolists("Daily Tasks", formattedDate, true, <Task>[]);
+    }
+
     return boxtodoList.toMap();
   }
 
@@ -47,8 +54,11 @@ class _TodoPageState extends State<TodoPage> {
           name: title, date: date, isDaily: isDaily, taskList: taskList));
       todoLists = [
         ...todoLists,
+        todoList(name: title, date: date, isDaily: isDaily, taskList: taskList)
       ];
     });
+
+    print(todoLists.length);
   }
 
   void setProblems(todoLists) {
@@ -251,7 +261,6 @@ class _TodoPageState extends State<TodoPage> {
 
                                                                                 Navigator.pop(context);
                                                                                 taskListController.clear();
-                                                                                print(todoLists.length);
                                                                               },
                                                                             )
                                                                           ],
@@ -266,34 +275,68 @@ class _TodoPageState extends State<TodoPage> {
                                           Expanded(
                                             child: StatefulBuilder(
                                               builder: (context, setState) {
-                                                int? selectedRadio = 0;
                                                 int? leng = todoLists.length;
-                                                return Column(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children:
-                                                      List<Widget>.generate(
-                                                          todoLists.length,
-                                                          (int index) {
-                                                    return Radio<int>(
-                                                      value: index,
-                                                      groupValue: selectedRadio,
-                                                      onChanged: (int? value) {
-                                                        setState(() =>
-                                                            selectedRadio =
-                                                                value);
-                                                      },
-                                                    );
-                                                  }),
-                                                );
+
+                                                return
+                                                    // Column(children: [
+                                                    //   Radio<int>(
+                                                    //     value: 0,
+                                                    //     groupValue: _selectedIndex,
+                                                    //     onChanged: (int? value) {
+                                                    //       setState(() =>
+                                                    //           _selectedIndex = 0);
+                                                    //     },
+                                                    //   ),
+                                                    ListView.separated(
+                                                        itemCount:
+                                                            todoLists.length,
+                                                        itemBuilder:
+                                                            (BuildContext
+                                                                    context,
+                                                                int index) {
+                                                          return Column(
+                                                            children: [
+                                                              Radio<int>(
+                                                                value: index,
+                                                                groupValue:
+                                                                    _selectedIndex,
+                                                                onChanged: (int?
+                                                                    value) {
+                                                                  setState(() =>
+                                                                      _selectedIndex =
+                                                                          index);
+                                                                },
+                                                              ),
+                                                              Text(todoLists[
+                                                                      index]
+                                                                  .name),
+                                                            ],
+                                                          );
+                                                        },
+                                                        separatorBuilder:
+                                                            (BuildContext
+                                                                    context,
+                                                                int index) {
+                                                          return Divider(
+                                                            color: context
+                                                                    .isDarkMode
+                                                                ? Colors.white
+                                                                : Colors
+                                                                    .grey[800],
+                                                            thickness: .5,
+                                                          );
+                                                        });
+                                                //]);
                                               },
                                             ),
                                           ),
                                         ],
                                       ),
                                     ),
-                                    const VerticalDivider(
-                                        thickness: 1, width: 1),
+                                    const Divider(
+                                      thickness: 1,
+                                      height: 1,
+                                    ),
                                     Container(
                                       width: MediaQuery.of(context).size.width -
                                           76,
