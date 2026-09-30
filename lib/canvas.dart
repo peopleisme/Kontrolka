@@ -50,9 +50,9 @@ class _CanvasPageState extends State<CanvasPage> {
   final GlobalKey _widgetKey = GlobalKey();
   List<drawing> offsets = <drawing>[];
   bool drawingMode = true;
-  double colorHeight = 50;
+  double colorHeight = 50, strokeHeight = 50;
   Color drawingColor = Colors.black;
-  double strokeWidth = 5;
+  double strokeWidth = 10;
   late Uint8List buffer;
   late ui.Image gradientImage;
 
@@ -119,65 +119,80 @@ class _CanvasPageState extends State<CanvasPage> {
                   Container(
                     height: 200,
                     alignment: Alignment.bottomCenter,
-                    width: 5000,
+                    width: double.infinity,
                     margin: EdgeInsets.fromLTRB(0, 0, 0, 15),
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child: Container(
-                              width: 56,
-                              height: 200,
-                              color: Theme.of(context).colorScheme.secondary,
-                              child: Column(children: [
-                                TextButton(
-                                  autofocus: (strokeWidth==5) ? true : false,
-                                  onPressed: () {
-                                    setState(() {
-                                      strokeWidth = 5;
-                                    });
-                                  },
-                                  child: Text(
-                                    "―",
-                                    style: TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 32,
-                                        fontWeight: FontWeight.w100),
-                                  ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              AnimatedContainer(
+                                alignment: Alignment.bottomCenter,
+                                transform: Matrix4.diagonal3Values(1.0, 1.0, 1.0),
+                                clipBehavior: Clip.hardEdge,
+                                height: strokeHeight,
+                                duration: const Duration(milliseconds: 200),
+                                curve: Curves.fastOutSlowIn,
+                                width: 56,
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.secondary,
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(
+                                      width: 2,
+                                      color:
+                                          Theme.of(context).colorScheme.secondary),
                                 ),
-                                TextButton(
-                                  autofocus: (strokeWidth==10) ? true : false,
-                                  onPressed: () {
-                                    setState(() {
-                                      strokeWidth = 10;
-                                    });
-                                  },
-                                  child: Text(
-                                    "―",
-                                    style: TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 32,
-                                        fontWeight: FontWeight.w500),
+                                child: Column(children: [
+                                  TextButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        strokeWidth = 5;
+                                        strokeHeight = 50;
+                                      });
+                                    },
+                                    child: Text(
+                                      "―",
+                                      style: TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: 32,
+                                          fontWeight: FontWeight.w100),
+                                    ),
                                   ),
-                                ),
-                                TextButton(
-                                  autofocus: (strokeWidth==15) ? true : false,
-                                  onPressed: () {
-                                    setState(() {
-                                      strokeWidth = 15;
-                                    });
-                                  },
-                                  child: Text(
-                                    "―",
-                                    style: TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 32,
-                                        fontWeight: FontWeight.w700),
+                                  TextButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        strokeWidth = 10.0;
+                                        strokeHeight = 50;
+                                      });
+                                    },
+                                    child: Text(
+                                      "―",
+                                      style: TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: 32,
+                                          fontWeight: FontWeight.w500),
+                                    ),
                                   ),
-                                ),
-                              ]),
-                            ),
+                                  TextButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        strokeWidth = 15;
+                                        strokeHeight = 50;
+                                      });
+                                    },
+                                    child: Text(
+                                      "―",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: 32,
+                                          fontWeight: FontWeight.w700),
+                                    ),
+                                  ),
+                                ]),
+                              ),
+                            ],
                           ),
                           SizedBox(
                             width: 96,
@@ -308,7 +323,14 @@ class _CanvasPageState extends State<CanvasPage> {
                             ),
                             FloatingActionButton(
                                 heroTag: null,
-                                onPressed: () {},
+                                onPressed: () {
+                                  setState(() {
+                                    if (strokeHeight == 50) {
+                                      strokeHeight = 200;
+                                    } else
+                                      strokeHeight = 50;
+                                  });
+                                },
                                 child: Icon(
                                   Icons.horizontal_rule,
                                   size: 32,
@@ -316,7 +338,7 @@ class _CanvasPageState extends State<CanvasPage> {
                             FloatingActionButton.large(
                               shape: const CircleBorder(),
                               onPressed: () {
-                                print(drawingMode);
+                                print("drawingMode: {$drawingMode}");
                                 setState(() {
                                   drawingMode = !drawingMode;
                                 });
@@ -349,13 +371,8 @@ class _CanvasPageState extends State<CanvasPage> {
                                     if (colorHeight == 50) {
                                       colorHeight = 200;
                                       Future.delayed(
-                                          const Duration(seconds: 2));
-
-                                      Future.delayed(
                                           Duration(milliseconds: 200),
                                           () => getgradientImage());
-
-                                      print("essa");
                                     } else
                                       colorHeight = 50;
                                   });
