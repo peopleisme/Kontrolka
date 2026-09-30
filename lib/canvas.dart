@@ -50,7 +50,12 @@ class _CanvasPageState extends State<CanvasPage> {
   final GlobalKey _widgetKey = GlobalKey();
   List<drawing> offsets = <drawing>[];
   bool drawingMode = true;
+<<<<<<< HEAD
   double colorHeight = 50, strokeHeight = 50;
+=======
+  double colorHeight = 50;
+  double strokesHeight = 50;
+>>>>>>> f26e0da40f33673aa843883a8456ced190e25bc6
   Color drawingColor = Colors.black;
   double strokeWidth = 10;
   late Uint8List buffer;
@@ -99,8 +104,8 @@ class _CanvasPageState extends State<CanvasPage> {
             body: GestureDetector(
               onPanUpdate: (DragUpdateDetails details) {
                 setState(() {
-                  offsets.add(drawing("line", details.localPosition.dx,
-                      details.localPosition.dy, drawingColor, strokeWidth));
+                  offsets.add(drawing("line", details.localPosition.dx + 100,
+                      details.localPosition.dy + 1, drawingColor, strokeWidth));
                 });
               },
               onPanEnd: (DragEndDetails details) => setState(() {
@@ -125,6 +130,7 @@ class _CanvasPageState extends State<CanvasPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Column(
+<<<<<<< HEAD
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               AnimatedContainer(
@@ -191,6 +197,70 @@ class _CanvasPageState extends State<CanvasPage> {
                                     ),
                                   ),
                                 ]),
+=======
+                            verticalDirection: VerticalDirection.up,
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 200),
+                                  curve: Curves.fastOutSlowIn,
+                                  width: 56,
+                                  height: strokesHeight,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                  child: Column(children: [
+                                    TextButton(
+                                      autofocus:
+                                          (strokeWidth == 5) ? true : false,
+                                      onPressed: () {
+                                        setState(() {
+                                          strokeWidth = 5;
+                                        });
+                                      },
+                                      child: Text(
+                                        "―",
+                                        style: TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: 32,
+                                            fontWeight: FontWeight.w100),
+                                      ),
+                                    ),
+                                    TextButton(
+                                      autofocus:
+                                          (strokeWidth == 10) ? true : false,
+                                      onPressed: () {
+                                        setState(() {
+                                          strokeWidth = 10;
+                                        });
+                                      },
+                                      child: Text(
+                                        "―",
+                                        style: TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: 32,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                    ),
+                                    TextButton(
+                                      autofocus:
+                                          (strokeWidth == 15) ? true : false,
+                                      onPressed: () {
+                                        setState(() {
+                                          strokeWidth = 15;
+                                        });
+                                      },
+                                      child: Text(
+                                        "―",
+                                        style: TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: 32,
+                                            fontWeight: FontWeight.w700),
+                                      ),
+                                    ),
+                                  ]),
+                                ),
+>>>>>>> f26e0da40f33673aa843883a8456ced190e25bc6
                               ),
                             ],
                           ),
@@ -325,10 +395,17 @@ class _CanvasPageState extends State<CanvasPage> {
                                 heroTag: null,
                                 onPressed: () {
                                   setState(() {
+<<<<<<< HEAD
                                     if (strokeHeight == 50) {
                                       strokeHeight = 200;
                                     } else
                                       strokeHeight = 50;
+=======
+                                    if (strokesHeight == 50) {
+                                      strokesHeight = 200;
+                                    } else
+                                      strokesHeight = 50;
+>>>>>>> f26e0da40f33673aa843883a8456ced190e25bc6
                                   });
                                 },
                                 child: Icon(

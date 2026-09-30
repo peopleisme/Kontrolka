@@ -7,6 +7,8 @@ import 'package:namer_app/ftree.dart';
 import 'package:namer_app/ideas.dart';
 import 'package:namer_app/models/problem_model.dart';
 import 'package:namer_app/models/film_model.dart';
+import 'package:namer_app/models/todoList_model.dart';
+import 'package:namer_app/models/task_model.dart';
 import 'package:namer_app/problems.dart';
 import 'package:namer_app/todo.dart';
 import 'package:namer_app/canvases.dart';
@@ -21,10 +23,14 @@ void main() async {
 
   Hive.registerAdapter(ProblemAdapter());
   Hive.registerAdapter(FilmAdapter());
+  Hive.registerAdapter(todoListAdapter());
   boxProblems = await Hive.openBox<Problem>("problems");
   boxFilms = await Hive.openBox<Film>("films");
+  boxtodoList = await Hive.openBox<todoList>("todoLists");
   runApp(MyApp());
 }
+
+class TodoListAdapter {}
 
 extension DarkMode on BuildContext {
   /// is dark mode currently enabled?
